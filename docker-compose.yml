@@ -1,0 +1,22 @@
+version: "3.5"
+
+services:
+  mediaslide-html-to-pdf:
+    image: node:latest
+
+    volumes:
+      - ./:/home/node/app
+    working_dir: /home/node/app
+    command: sh -c "npm install  && apk add --no-cache \
+      chromium \
+      nss \
+      freetype \
+      harfbuzz \
+      ca-certificates \
+      ttf-freefont \
+      nodejs \
+      && npm run dev"
+    environment:
+      - NODE_ENV=development
+    ports:
+      - 8080:8080
