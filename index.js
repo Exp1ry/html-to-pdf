@@ -1,7 +1,7 @@
 const express = require("express");
 const puppeteer = require("puppeteer");
 const app = express();
-app.listen(3000, () => console.log("running bwehehehe"));
+app.listen(8080, () => console.log("running bwehehehe"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
