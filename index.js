@@ -5,7 +5,7 @@ app.listen(3000, () => console.log("running bwehehehe"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public")); // Serve static files from the 'public' folder
+app.use(express.static("public"));
 
 app.post("/generate-pdf", async (req, res) => {
   try {
