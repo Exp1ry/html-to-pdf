@@ -1,6 +1,12 @@
 const express = require("express");
 const puppeteer = require("puppeteer");
-const { notFound, secretKeyProtected } = require("./middleware");
+const {
+  notFound,
+  secretKeyProtected,
+  joiCustomErrorHandler,
+  validator,
+  bodySchema,
+} = require("./middleware");
 const app = express();
 app.listen(8080, () => console.log("running bwehehehe"));
 
@@ -9,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(secretKeyProtected);
 
-app.post("/generate-pdf", async (req, res) => {
+app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
   try {
     const browser = await puppeteer.launch({
       executablePath: "/usr/bin/chromium-browser",
@@ -74,4 +80,6 @@ app.post("/generate-pdf", async (req, res) => {
   }
 });
 //
+app.use(joiCustomErrorHandler);
+
 app.use(notFound);
