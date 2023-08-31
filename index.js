@@ -6,6 +6,7 @@ app.listen(8080, () => console.log("running bwehehehe"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
+/* new code */
 
 app.post("/generate-pdf", async (req, res) => {
   try {
