@@ -34,7 +34,7 @@ app.post("/generate-pdf", async (req, res) => {
       'attachment; filename="generated.pdf"'
     );
 
-    // Send the PDF as response
+    // Send the PDF as response ss
     res.send(pdf);
   } catch (error) {
     console.error(error);
