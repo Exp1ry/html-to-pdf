@@ -80,8 +80,8 @@ const bodySchema = Joi.object({
       "a6"
     ),
   headerTemplate: Joi.string().optional(),
-  height: Joi.number().optional(),
-  width: Joi.number().optional(),
+  height: Joi.string().optional(),
+  width: Joi.string().optional(),
   landscape: Joi.boolean().optional(),
   margin: Joi.object({
     bottom: Joi.number().optional(),
