@@ -8,7 +8,7 @@ const {
   bodySchema,
 } = require("./middleware");
 const app = express();
-app.listen(8080, () => console.log("running bwehehehe"));
+app.listen(8080, () => console.log("running on port 8080"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -16,6 +16,8 @@ app.use(express.static("public"));
 app.use(secretKeyProtected);
 
 app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
+  // console.log(req.body);
+  // return res.send("ok");
   try {
     const browser = await puppeteer.launch({
       executablePath: "/usr/bin/chromium-browser",
