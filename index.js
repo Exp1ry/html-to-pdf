@@ -10,8 +10,8 @@ const {
 const app = express();
 app.listen(8080, () => console.log("running on port 8080"));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "30mb" })); // Increase limit to 10MB
+app.use(express.urlencoded({ limit: "30mb", extended: true }));
 app.use(express.static("public"));
 app.use(secretKeyProtected);
 
