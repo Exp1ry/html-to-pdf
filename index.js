@@ -58,7 +58,7 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
       ...(path && { path }),
       ...(preferCSSPageSize && { preferCSSPageSize }),
       ...(preferCSSPageSize && { preferCSSPageSize }),
-      printBackground: printBackground || true,
+      ...(printBackground && { printBackground }),
       ...(scale && { scale }),
       ...(timeout && { timeout }),
       ...(width && { width }),
