@@ -8,6 +8,7 @@ const {
   bodySchema,
 } = require("./middleware");
 const cors = require("cors");
+const zlib = require("zlib"); // Import the zlib module for compression
 
 const app = express();
 app.listen(8080, () => console.log("running on port 8080"));
@@ -69,12 +70,26 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
     });
 
     await browser.close();
+    zlib.gzip(pdf, (err, compressedPdf) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Error generating PDF");
+      } else {
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+          "Content-Disposition",
+          'attachment; filename="generated.pdf"'
+        );
 
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      'attachment; filename="generated.pdf"'
-    );
+        // Send the compressed PDF as response
+        res.send(compressedPdf);
+      }
+    });
+    // res.setHeader("Content-Type", "application/pdf");
+    // res.setHeader(
+    //   "Content-Disposition",
+    //   'attachment; filename="generated.pdf"'
+    // );
 
     // Send the PDF as response
     return res.send(pdf);
