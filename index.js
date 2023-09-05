@@ -73,7 +73,7 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
     zlib.gzip(pdf, (err, compressedPdf) => {
       if (err) {
         console.error(err);
-        res.status(500).send("Error generating PDF");
+        return res.status(500).send("Error generating PDF");
       } else {
         res.setHeader("Content-Type", "application/pdf");
         res.setHeader(
@@ -82,7 +82,7 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
         );
 
         // Send the compressed PDF as response
-        res.send(compressedPdf);
+        return res.send(compressedPdf);
       }
     });
     // res.setHeader("Content-Type", "application/pdf");
@@ -92,7 +92,7 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
     // );
 
     // Send the PDF as response
-    return res.send(pdf);
+    // return res.send(pdf);
   } catch (error) {
     console.error(error);
     res.status(500).send("Error generating PDF");
