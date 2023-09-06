@@ -71,38 +71,43 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
     });
 
     await browser.close();
-    const pdfFilePath = "test.pdf";
-    require("fs").writeFileSync(pdfFilePath, pdf);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'attachment; filename="reduced.pdf"');
 
-    // Use Ghostscript to reduce the PDF file size
-    const compressionType = req.body.compressionType || "prepress";
-    const dpi = req.body.dpi || 72;
-    exec(
-      `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/${compressionType} -dNOPAUSE -dBATCH -sOutputFile=reduced.pdf ${pdfFilePath}`,
-      (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Ghostscript error: ${error}`);
-          res.status(500).send("Error generating PDF");
-        } else {
-          // Read the reduced PDF from the temporary file
-          const reducedPdf = require("fs").readFileSync("reduced.pdf");
+    // Send the reduced PDF as a response
+    res.send(pdf);
+    // const pdfFilePath = "test.pdf";
+    // require("fs").writeFileSync(pdfFilePath, pdf);
 
-          // Set response headers
-          res.setHeader("Content-Type", "application/pdf");
-          res.setHeader(
-            "Content-Disposition",
-            'attachment; filename="reduced.pdf"'
-          );
+    // // Use Ghostscript to reduce the PDF file size
+    // const compressionType = req.body.compressionType || "prepress";
+    // const dpi = req.body.dpi || 72;
+    // exec(
+    //   `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/${compressionType} -dNOPAUSE -dBATCH -sOutputFile=reduced.pdf ${pdfFilePath}`,
+    //   (error, stdout, stderr) => {
+    //     if (error) {
+    //       console.error(`Ghostscript error: ${error}`);
+    //       res.status(500).send("Error generating PDF");
+    //     } else {
+    //       // Read the reduced PDF from the temporary file
+    //       const reducedPdf = require("fs").readFileSync("reduced.pdf");
 
-          // Send the reduced PDF as a response
-          res.send(reducedPdf);
+    //       // Set response headers
+    //       res.setHeader("Content-Type", "application/pdf");
+    //       res.setHeader(
+    //         "Content-Disposition",
+    //         'attachment; filename="reduced.pdf"'
+    //       );
 
-          // Optionally, remove the temporary files after sending the response
-          require("fs").unlinkSync(pdfFilePath);
-          require("fs").unlinkSync("reduced.pdf");
-        }
-      }
-    );
+    //       // Send the reduced PDF as a response
+    //       res.send(reducedPdf);
+
+    //       // Optionally, remove the temporary files after sending the response
+    //       require("fs").unlinkSync(pdfFilePath);
+    //       require("fs").unlinkSync("reduced.pdf");
+    //     }
+    //   }
+    // );
   } catch (error) {
     console.error(error);
     res.status(500).send("Error generating PDF");
