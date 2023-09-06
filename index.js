@@ -88,7 +88,7 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
     } = req.body;
     //
     await page.setContent(html, { waitUntil: "networkidle0" });
-
+    //
     // Generate the PDF
     const pdf = await page.pdf({
       ...(displayHeaderFooter && { displayHeaderFooter }),
