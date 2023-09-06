@@ -23,6 +23,8 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
   // console.log(req.body);
   // return res.send("ok");
   try {
+    console.time("browserOpen");
+
     const browser = await puppeteer.launch({
       executablePath: "/usr/bin/chromium-browser",
       headless: true,
@@ -68,6 +70,8 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
     });
 
     const page = await browser.newPage();
+    console.timeEnd("browserOpen");
+
     const {
       html,
       displayHeaderFooter,
@@ -90,6 +94,7 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
     await page.setContent(html, { waitUntil: "networkidle0" });
     //
     // Generate the PDF
+    console.time("Generatingpdf");
     const pdf = await page.pdf({
       ...(displayHeaderFooter && { displayHeaderFooter }),
       ...(footerTemplate && { footerTemplate }),
@@ -108,14 +113,16 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
       ...(width && { width }),
       path: "test.pdf",
     });
+    console.timeEnd("Generatingpdf");
 
-    await browser.close();
     const pdfFilePath = "test.pdf";
     require("fs").writeFileSync(pdfFilePath, pdf);
 
     // Use Ghostscript to reduce the PDF file size
     const compressionType = req.body.compressionType || "prepress";
     const dpi = req.body.dpi || 300;
+    console.time("Reducingpdf");
+
     exec(
       `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/${compressionType} -dNOPAUSE -dBATCH -sOutputFile=reduced.pdf ${pdfFilePath}`,
       // `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/${compressionType} -dQUIET -dBATCH -dDetectDuplicateImages=true -dDownsampleColorImages=true -dDownsampleGrayImages=true -dDownsampleMonoImages=true -dColorImageResolution=${dpi} -dGrayImageResolution=${dpi} -dMonoImageResolution=${dpi} -sOutputFile=reduced.pdf ${pdfFilePath}`,
@@ -136,6 +143,7 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
             "Content-Disposition",
             'attachment; filename="reduced.pdf"'
           );
+          console.timeEnd("Reducingpdf");
 
           // Send the reduced PDF as a response
           res.send(reducedPdf);
@@ -146,6 +154,9 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
         }
       }
     );
+    console.time("browserClose");
+    await browser.close();
+    console.timeEnd("browserClose");
   } catch (error) {
     console.error(error);
     res.status(500).send("Error generating PDF");
