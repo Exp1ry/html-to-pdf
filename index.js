@@ -78,7 +78,7 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
     const compressionType = req.body.compressionType || "prepress";
     const dpi = req.body.dpi || 72;
     exec(
-      `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dQUIET -dBATCH -dDetectDuplicateImages=true -dDownsampleColorImages=true -dPDFSETTINGS=/${compressionType} -dDownsampleGrayImages=true -dDownsampleMonoImages=true -dColorImageResolution=${dpi} -dGrayImageResolution=${dpi} -dMonoImageResolution=${dpi}  -dNOPAUSE -dBATCH -sOutputFile=reduced.pdf ${pdfFilePath}`,
+      `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/${compressionType} -dNOPAUSE -dBATCH -sOutputFile=reduced.pdf ${pdfFilePath}`,
       (error, stdout, stderr) => {
         if (error) {
           console.error(`Ghostscript error: ${error}`);
