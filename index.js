@@ -8,7 +8,7 @@ const {
   bodySchema,
 } = require("./middleware");
 const cors = require("cors");
-const zlib = require("zlib"); // Import the zlib module for compression
+const { exec } = require("child_process"); // Import the child_process module
 
 const app = express();
 app.listen(8080, () => console.log("running on port 8080"));
@@ -67,32 +67,42 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
       ...(scale && { scale }),
       ...(timeout && { timeout }),
       ...(width && { width }),
+      path: "test.pdf",
     });
 
     await browser.close();
-    zlib.gzip(pdf, (err, compressedPdf) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).send("Error generating PDF");
-      } else {
-        res.setHeader("Content-Type", "application/pdf");
-        res.setHeader(
-          "Content-Disposition",
-          'attachment; filename="generated.pdf"'
-        );
+    const pdfFilePath = "test.pdf";
+    require("fs").writeFileSync(pdfFilePath, pdf);
 
-        // Send the compressed PDF as response
-        return res.send(compressedPdf);
+    // Use Ghostscript to reduce the PDF file size
+    const compressionType = req.body.compressionType || "prepress";
+    const dpi = req.body.dpi || 72;
+    exec(
+      `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dQUIET -dBATCH -dDetectDuplicateImages=true -dDownsampleColorImages=true -dPDFSETTINGS=/${compressionType} -dDownsampleGrayImages=true -dDownsampleMonoImages=true -dColorImageResolution=${dpi} -dGrayImageResolution=${dpi} -dMonoImageResolution=${dpi}  -dNOPAUSE -dBATCH -sOutputFile=reduced.pdf ${pdfFilePath}`,
+      (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Ghostscript error: ${error}`);
+          res.status(500).send("Error generating PDF");
+        } else {
+          // Read the reduced PDF from the temporary file
+          const reducedPdf = require("fs").readFileSync("reduced.pdf");
+
+          // Set response headers
+          res.setHeader("Content-Type", "application/pdf");
+          res.setHeader(
+            "Content-Disposition",
+            'attachment; filename="reduced.pdf"'
+          );
+
+          // Send the reduced PDF as a response
+          res.send(reducedPdf);
+
+          // Optionally, remove the temporary files after sending the response
+          require("fs").unlinkSync(pdfFilePath);
+          require("fs").unlinkSync("reduced.pdf");
+        }
       }
-    });
-    // res.setHeader("Content-Type", "application/pdf");
-    // res.setHeader(
-    //   "Content-Disposition",
-    //   'attachment; filename="generated.pdf"'
-    // );
-
-    // Send the PDF as response
-    // return res.send(pdf);
+    );
   } catch (error) {
     console.error(error);
     res.status(500).send("Error generating PDF");

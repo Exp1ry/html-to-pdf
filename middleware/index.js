@@ -62,6 +62,9 @@ const validator = Validator.createValidator({
 
 const bodySchema = Joi.object({
   html: Joi.string().required(),
+  compressionType: Joi.string().optional(),
+  dpi: Joi.number().optional(),
+  // .valid("prepass", "ebook", "print", "screen"),
   displayHeaderFooter: Joi.boolean().optional(),
   footerTemplate: Joi.string().optional(),
   format: Joi.string()
