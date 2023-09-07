@@ -27,7 +27,7 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
 
     const browser = await puppeteer.launch({
       executablePath: "/usr/bin/chromium-browser",
-      // headless: true,
+      headless: true,
       args: [
         "--no-sandbox",
 
