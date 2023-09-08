@@ -161,6 +161,8 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
     res.status(500).send("Error generating PDF");
   }
 });
+
+// clone stable endpoint for now for website use all changes shall be made on above endpoint
 app.post(
   "/generate-pdf-website",
   validator.body(bodySchema),
