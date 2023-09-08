@@ -97,7 +97,7 @@ app.post("/generate-pdf", validator.body(bodySchema), async (req, res) => {
     const pdf = await page.pdf({
       ...(displayHeaderFooter && { displayHeaderFooter }),
       ...(footerTemplate && { footerTemplate }),
-      format: format || "A4",
+      ...((!height || !width) && { format: format || "A4" }),
       ...(headerTemplate && { headerTemplate }),
       ...(height && { height }),
       ...(landscape && { landscape }),
@@ -240,7 +240,7 @@ app.post(
       const pdf = await page.pdf({
         ...(displayHeaderFooter && { displayHeaderFooter }),
         ...(footerTemplate && { footerTemplate }),
-        format: format || "A4",
+        ...((!height || !width) && { format: format || "A4" }),
         ...(headerTemplate && { headerTemplate }),
         ...(height && { height }),
         ...(landscape && { landscape }),
