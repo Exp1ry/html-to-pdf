@@ -1,12 +1,29 @@
-FROM node:lts-alpine
+# Use a smaller base image
+FROM node:16-alpine as build
 
 WORKDIR /app
 
-RUN apk update && apk add --no-cache nmap && \
-    echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
-    echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
-    apk update && \
+
+ENV NODE_ENV=production
+
+# Copy package.json and package-lock.json separately
+COPY package.json /app/
+COPY package-lock.json /app/
+
+# Install npm dependencies and TypeScript
+RUN npm ci
+RUN npm install typescript
+
+# Copy your application code
+COPY . /app
+
+# ---- Second Stage (Final Image) ----
+FROM node:16-alpine
+
+# Combine update and package installations
+RUN apk update && \
     apk add --no-cache \
+      nmap \
       ghostscript \
       chromium \
       harfbuzz \
@@ -14,13 +31,13 @@ RUN apk update && apk add --no-cache nmap && \
       ttf-freefont \
       nss
 
+# Set environment variables
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
 
-COPY package.json /app/
-COPY package-lock.json /app/
-RUN npm install
+WORKDIR /app
 
-COPY . /app
+# Copy the built application from the previous stage
+COPY --from=build /app /app
 
 EXPOSE 8080
 
