@@ -1,9 +1,6 @@
 import Joi from "joi";
-export const bodySchema = Joi.object({
-  html: Joi.string().required(),
-  compressionType: Joi.string().optional(),
-  dpi: Joi.number().optional(),
-  // .valid("prepass", "ebook", "print", "screen"),
+
+const optionsSchema = Joi.object({
   displayHeaderFooter: Joi.boolean().optional(),
   footerTemplate: Joi.string().optional(),
   format: Joi.string()
@@ -39,6 +36,10 @@ export const bodySchema = Joi.object({
   printBackground: Joi.boolean().optional(),
   scale: Joi.number().optional(),
   timeout: Joi.number().optional(),
+});
+export const bodySchema = Joi.object({
+  url: Joi.string().required(),
+  options: optionsSchema,
 });
 
 export default bodySchema;
