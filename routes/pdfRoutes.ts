@@ -9,6 +9,7 @@ pdfRouter.post(
   validationMiddleware(bodySchema),
   pdfController.generatePdf
 );
+pdfRouter.post("/test", pdfController.testPdf);
 pdfRouter.post(
   "/generate-pdf-website",
   validationMiddleware(bodySchema),

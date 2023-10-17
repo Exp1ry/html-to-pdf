@@ -283,6 +283,50 @@ class PdfController {
       next(error);
     }
   }
+
+  public async testPdf(req: Request, res: Response, next: NextFunction) {
+    try {
+      // Create a browser instance
+      const browser = await launchBrowser();
+      // Create a new page
+      const page = await browser.newPage();
+
+      // Website URL to export as pdf
+      const website_url =
+        "https://www.bannerbear.com/blog/how-to-download-images-from-a-website-using-puppeteer/";
+
+      // Open URL in current page
+      await page.goto(website_url, { waitUntil: "networkidle0" });
+
+      //To reflect CSS used for screens instead of print
+      await page.emulateMediaType("screen");
+
+      // Downlaod the PDF
+      const pdf = await page.pdf({
+        path: "result.pdf",
+        margin: { top: "100px", right: "50px", bottom: "100px", left: "50px" },
+        printBackground: true,
+        format: "A4",
+      });
+
+      const reducedPdf = require("fs").readFileSync("result.pdf");
+
+      // Set response headers
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="reduced.pdf"'
+      );
+      console.timeEnd("Reducingpdf");
+
+      // Send the reduced PDF as a response
+      res.send(reducedPdf);
+      // Close the browser instance
+      await browser.close();
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 const pdfController = new PdfController();
