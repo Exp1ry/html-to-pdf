@@ -17,43 +17,32 @@ const ApiResponse_1 = __importDefault(require("../@types/ApiResponse"));
 const ApiError_1 = require("../@types/ApiError");
 const httpCodes_1 = require("../@types/httpCodes");
 const puppeteer_1 = __importDefault(require("../utils/puppeteer"));
+const fs_1 = __importDefault(require("fs"));
 class PdfService {
-    generatePdfService(options, compressionType = "prepress", dpi = 300) {
+    generatePdfService(options, compressionType = "prepress", dpi = 300, page) {
         return __awaiter(this, void 0, void 0, function* () {
             console.time("browserOpen");
             const { displayHeaderFooter, footerTemplate, width, height, headerTemplate, landscape, margin, omitBackground, pageRanges, format, path, timeout, scale, printBackground, preferCSSPageSize, } = options;
             console.time("Generatingpdf");
-            const browser = yield (0, puppeteer_1.default)();
-            const page = yield browser.newPage();
             const pdf = yield page.pdf(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (displayHeaderFooter && { displayHeaderFooter })), (footerTemplate && { footerTemplate })), ((!height || !width) && { format: format || "A4" })), (headerTemplate && { headerTemplate })), (height && { height })), (landscape && { landscape })), (margin && { margin })), (omitBackground && { omitBackground })), (pageRanges && { pageRanges })), (path && { path })), (preferCSSPageSize && { preferCSSPageSize })), (printBackground && { printBackground })), (scale && { scale })), (timeout && { timeout })), (width && { width })), { path: "output.pdf" }));
-            console.timeEnd("Generatingpdf");
             // Use Ghostscript to reduce the PDF file size
-            console.time("Reducingpdf");
             const pdfFilePath = "output.pdf";
             // Generate the PDF
             console.time("Reducingpdf");
-            require("fs").writeFileSync(pdfFilePath, pdf);
-            let reducedPdf;
+            fs_1.default.writeFileSync(pdfFilePath, pdf);
             (0, child_process_1.exec)(`gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/${compressionType} -dNOPAUSE -dBATCH -sOutputFile=reduced.pdf ${pdfFilePath}`, 
             // `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/${compressionType} -dQUIET -dBATCH -dDetectDuplicateImages=true -dDownsampleColorImages=true -dDownsampleGrayImages=true -dDownsampleMonoImages=true -dColorImageResolution=${dpi} -dGrayImageResolution=${dpi} -dMonoImageResolution=${dpi} -sOutputFile=reduced.pdf ${pdfFilePath}`,
             (error, stdout, stderr) => {
                 if (error) {
-                    console.error(`Ghostscript error: ${error}`);
-                    return new ApiError_1.ApiError(error, "", true, "Error generating PDF Ghostscript error", httpCodes_1.httpCodes.INTERNAL_SERVER);
+                    throw new ApiError_1.ApiError(error, "", true, "Ghostscript error", httpCodes_1.httpCodes.BAD_REQUEST);
                 }
-                // Read the reduced PDF from the temporary file
-                reducedPdf = require("fs").readFileSync("reduced.pdf");
-                // Set response headers
-                console.timeEnd("Reducingpdf");
-                // Optionally, remove the temporary files after sending the response
-                require("fs").unlinkSync(pdfFilePath);
-                require("fs").unlinkSync("reduced.pdf");
-                // Send the reduced PDF as a response
+                else {
+                    // Read the reduced PDF from the temporary file
+                    const reducedPdf = require("fs").readFileSync("reduced.pdf");
+                    // Send the reduced PDF as a response
+                    return new ApiResponse_1.default(reducedPdf, "Successfully generated PDF", false, "", 200);
+                }
             });
-            console.time("browserClose");
-            yield browser.close();
-            console.timeEnd("browserClose");
-            return new ApiResponse_1.default(reducedPdf, "Successfully converted to PDF", false, "", httpCodes_1.httpCodes.OK);
         });
     }
     generatePdfWebsiteService(options, compressionType = "prepress", dpi = 300) {
