@@ -86,7 +86,7 @@ class PdfController {
                 });
                 const page = yield browser.newPage();
                 console.timeEnd("browserOpen");
-                const { html, displayHeaderFooter, footerTemplate, format, headerTemplate, height, landscape, margin, omitBackground, pageRanges, path, preferCSSPageSize, printBackground, scale, timeout, width, } = req.body;
+                const { html, displayHeaderFooter, footerTemplate, format, headerTemplate, height, landscape, margin, omitBackground, pageRanges, path, preferCSSPageSize, printBackground = true, scale, timeout, width, } = req.body;
                 //
                 yield page.setContent(html, { waitUntil: "networkidle0" });
                 //
