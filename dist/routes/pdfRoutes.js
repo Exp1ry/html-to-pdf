@@ -9,5 +9,6 @@ const bodySchema_1 = __importDefault(require("../schemas/bodySchema"));
 const validationMiddleware_1 = __importDefault(require("../middleware/validationMiddleware"));
 const pdfRouter = express_1.default.Router();
 pdfRouter.post("/generate-pdf", (0, validationMiddleware_1.default)(bodySchema_1.default), pdfController_1.default.generatePdf);
+// pdfRouter.post("/test", pdfController.generatePdf);
 pdfRouter.post("/generate-pdf-website", (0, validationMiddleware_1.default)(bodySchema_1.default), pdfController_1.default.generatePdfWebsite);
 exports.default = pdfRouter;

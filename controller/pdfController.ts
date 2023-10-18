@@ -32,34 +32,29 @@ class PdfController {
         width,
       } = req.body;
 
-      const browser = await launchBrowser();
-      const page = await browser.newPage();
+      // const resp = await pdfService.generatePdfService(
+      //   {
+      //     displayHeaderFooter,
+      //     footerTemplate,
+      //     format,
+      //     headerTemplate,
+      //     height,
+      //     landscape,
+      //     margin,
+      //     omitBackground,
+      //     pageRanges,
+      //     path,
+      //     preferCSSPageSize,
+      //     printBackground,
+      //     scale,
+      //     timeout,
+      //     width,
+      //   },
+      //   compressionType,
 
-      await page.setContent(html, { waitUntil: "networkidle0" });
+      // );
 
-      const resp = await pdfService.generatePdfWebsiteService(
-        {
-          displayHeaderFooter,
-          footerTemplate,
-          format,
-          headerTemplate,
-          height,
-          landscape,
-          margin,
-          omitBackground,
-          pageRanges,
-          path,
-          preferCSSPageSize,
-          printBackground,
-          scale,
-          timeout,
-          width,
-        },
-        compressionType,
-        dpi
-      );
-
-      return res.status(resp.statusCode).json(resp);
+      // return res.status(resp.statusCode).json(resp);
     } catch (error) {
       next(error);
     }
