@@ -37,9 +37,9 @@ const optionsSchema = Joi.object({
   scale: Joi.number().optional(),
   timeout: Joi.number().optional(),
 });
-export const bodySchema = Joi.object({
+const fromUrlSchema = Joi.object({
   url: Joi.string().required(),
   options: optionsSchema,
 });
 
-export default bodySchema;
+export default fromUrlSchema;

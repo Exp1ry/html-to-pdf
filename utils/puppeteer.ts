@@ -115,4 +115,54 @@ async function createPdfWithSettings(
   return page;
 }
 
-export default createPdfWithSettings;
+async function createPdfWithHTML(
+  html: string,
+  {
+    displayHeaderFooter = undefined,
+    footerTemplate = undefined,
+    format = undefined,
+    headerTemplate = undefined,
+    height = undefined,
+    landscape = undefined,
+    margin = undefined,
+    omitBackground = undefined,
+    pageRanges = undefined,
+    path = undefined,
+    preferCSSPageSize = undefined,
+    printBackground = undefined,
+    scale = undefined,
+    timeout = undefined,
+    width = undefined,
+  }: PDFOptions
+) {
+  const browser = await launchBrowser();
+  const page = await browser.newPage();
+  // Used promise.all to combine both promises for speed
+
+  await page.setContent(html, { waitUntil: "networkidle0" }),
+    // Download the PDF
+    await page.pdf({
+      path: "output.pdf",
+      ...(displayHeaderFooter && { displayHeaderFooter }),
+      ...(footerTemplate && { footerTemplate }),
+      ...((!height || !width) && { format: format || "a4" }),
+      ...(headerTemplate && { headerTemplate }),
+      ...(height && { height }),
+      ...(landscape && { landscape }),
+      ...(margin && { margin }),
+      ...(omitBackground && { omitBackground }),
+      ...(pageRanges && { pageRanges }),
+      ...(path && { path }),
+      ...(preferCSSPageSize && { preferCSSPageSize }),
+      ...(printBackground && { printBackground: true }),
+      ...(scale && { scale }),
+      ...(timeout && { timeout }),
+      ...(width && { width }),
+    }),
+    // Close the browser
+    await browser.close();
+
+  return page;
+}
+
+export { createPdfWithSettings, createPdfWithHTML };

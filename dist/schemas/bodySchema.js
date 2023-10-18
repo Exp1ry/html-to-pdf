@@ -30,7 +30,8 @@ const optionsSchema = joi_1.default.object({
     timeout: joi_1.default.number().optional(),
 });
 exports.bodySchema = joi_1.default.object({
-    url: joi_1.default.string().required(),
+    html: joi_1.default.string().optional(),
+    url: joi_1.default.string().optional(),
     options: optionsSchema,
 });
 exports.default = exports.bodySchema;

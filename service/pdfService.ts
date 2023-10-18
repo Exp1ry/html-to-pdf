@@ -3,10 +3,10 @@ import { exec } from "child_process"; // Import the child_process module
 import ApiResponse from "../@types/ApiResponse";
 import { ApiError } from "../@types/ApiError";
 
-import createPdfWithSettings from "../utils/puppeteer";
+import { createPdfWithHTML, createPdfWithSettings } from "../utils/puppeteer";
+import { httpCodes } from "../@types/httpCodes";
 class PdfService {
-  public async generatePdfService(
-    url: string,
+  public async generatePdfFromUrl(
     {
       displayHeaderFooter = undefined,
       footerTemplate = undefined,
@@ -23,8 +23,9 @@ class PdfService {
       scale = undefined,
       timeout = undefined,
       width = undefined,
-    }: PDFOptions
-  ): Promise<ApiResponse<any>> {
+    }: PDFOptions,
+    url: string
+  ) {
     // Create a new page, and go to the url, and create the PDF
     await createPdfWithSettings(url, {
       displayHeaderFooter,
@@ -43,11 +44,8 @@ class PdfService {
       timeout,
       width,
     });
-
     const reducedPdf = require("fs").readFileSync("result.pdf");
 
-    // Unlinks the file
-    // fs.unlinkSync("result.pdf");
     return new ApiResponse(
       reducedPdf,
       "Successfully created PDF",
@@ -56,57 +54,50 @@ class PdfService {
       200
     );
   }
+  // public async generatePdfFromHtml(
+  //   {
+  //     displayHeaderFooter = undefined,
+  //     footerTemplate = undefined,
+  //     format = undefined,
+  //     headerTemplate = undefined,
+  //     height = undefined,
+  //     landscape = undefined,
+  //     margin = undefined,
+  //     omitBackground = undefined,
+  //     pageRanges = undefined,
+  //     path = undefined,
+  //     preferCSSPageSize = undefined,
+  //     printBackground = undefined,
+  //     scale = undefined,
+  //     timeout = undefined,
+  //     width = undefined,
+  //   }: PDFOptions,
 
-  // public async generatePdfWebsiteService(
-  //   options: PDFOptions,
-  //   compressionType = "prepress",
-  //   dpi = 300
-  // ) {
-  //   const {
+  //   html: string
+  // ): Promise<any> {
+  //   const pdf = await createPdfWithHTML(html, {
   //     displayHeaderFooter,
   //     footerTemplate,
-  //     width,
-  //     height,
+  //     format,
   //     headerTemplate,
+  //     height,
   //     landscape,
   //     margin,
   //     omitBackground,
   //     pageRanges,
-  //     format,
   //     path,
-  //     timeout,
-  //     scale,
-  //     printBackground,
   //     preferCSSPageSize,
-  //   } = options;
-
-  //   // const browser = await launchBrowser();
-  //   // const page = await browser.newPage();
-
-  //   // // Generate the PDF
-  //   // const pdf = await page.pdf({
-  //   //   ...(displayHeaderFooter && { displayHeaderFooter }),
-  //   //   ...(footerTemplate && { footerTemplate }),
-  //   //   ...((!height || !width) && { format: format || "A4" }),
-  //   //   ...(headerTemplate && { headerTemplate }),
-  //   //   ...(height && { height }),
-  //   //   ...(landscape && { landscape }),
-  //   //   ...(margin && { margin }),
-  //   //   ...(omitBackground && { omitBackground }),
-  //   //   ...(pageRanges && { pageRanges }),
-  //   //   ...(path && { path }),
-  //   //   ...(preferCSSPageSize && { preferCSSPageSize }),
-  //   //   ...(printBackground && { printBackground }),
-  //   //   ...(scale && { scale }),
-  //   //   ...(timeout && { timeout }),
-  //   //   ...(width && { width }),
-  //   //   path: "output.pdf",
-  //   // });
+  //     printBackground,
+  //     scale,
+  //     timeout,
+  //     width,
+  //   });
 
   //   const pdfFilePath = "output.pdf";
-  //   // require("fs").writeFileSync(pdfFilePath, pdf);
+  //   require("fs").writeFileSync(pdfFilePath, pdf);
 
-  //   let reducedPdf;
+  //   // Use Ghostscript to reduce the PDF file size
+  //   const compressionType = "prepress";
 
   //   exec(
   //     `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/${compressionType} -dNOPAUSE -dBATCH -sOutputFile=reduced.pdf ${pdfFilePath}`,
@@ -115,38 +106,39 @@ class PdfService {
   //     (error, stdout, stderr) => {
   //       if (error) {
   //         console.error(`Ghostscript error: ${error}`);
-  //         return new ApiError(error, "", true, "Ghostscript error", 403);
+  //         throw new ApiError(
+  //           error,
+  //           "",
+  //           true,
+  //           "Ghostscript error",
+  //           httpCodes.CONFLICT
+  //         );
   //       } else {
   //         // Read the reduced PDF from the temporary file
-  //         reducedPdf = require("fs").readFileSync("reduced.pdf");
+  //         const reducedPdf = require("fs").readFileSync("reduced.pdf");
 
   //         // Set response headers
 
   //         console.timeEnd("Reducingpdf");
 
   //         // Send the reduced PDF as a response
-
-  //         // Optionally, remove the temporary files after sending the response
-  //         require("fs").unlinkSync(pdfFilePath);
-  //         require("fs").unlinkSync("reduced.pdf");
+  //         return new ApiResponse(
+  //           reducedPdf,
+  //           "Successfully generated PDF",
+  //           false,
+  //           "",
+  //           httpCodes.OK
+  //         );
   //       }
   //     }
   //   );
-  //   console.time("Reducingpdf");
+  //   // Optionally, remove the temporary files after sending the response
+  //   require("fs").unlinkSync(pdfFilePath);
+  //   require("fs").unlinkSync("reduced.pdf");
 
-  //   console.time("browserClose");
-  //   // await browser.close();
-  //   console.timeEnd("browserClose");
-
-  //   return new ApiResponse(
-  //     reducedPdf,
-  //     "Successfully reduced PDF",
-  //     false,
-  //     "",
-  //     200
-  //   );
+  //   // Unlinks the file
+  //   // fs.unlinkSync("result.pdf");
   // }
 }
-
 const pdfService = new PdfService();
 export default pdfService;

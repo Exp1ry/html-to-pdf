@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createPdfWithHTML = exports.createPdfWithSettings = void 0;
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const ApiError_1 = require("../@types/ApiError");
 const httpCodes_1 = require("../@types/httpCodes");
@@ -73,13 +74,30 @@ function createPdfWithSettings(url, { displayHeaderFooter = undefined, footerTem
     return __awaiter(this, void 0, void 0, function* () {
         const browser = yield launchBrowser();
         const page = yield browser.newPage();
+        // Used promise.all to combine both promises for speed
         yield Promise.all([
             page.goto(url, { waitUntil: "networkidle0" }),
             page.emulateMediaType("screen"),
         ]);
+        // Download the PDF
         yield page.pdf(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ path: "result.pdf" }, (displayHeaderFooter && { displayHeaderFooter })), (footerTemplate && { footerTemplate })), ((!height || !width) && { format: format || "a4" })), (headerTemplate && { headerTemplate })), (height && { height })), (landscape && { landscape })), (margin && { margin })), (omitBackground && { omitBackground })), (pageRanges && { pageRanges })), (path && { path })), (preferCSSPageSize && { preferCSSPageSize })), (printBackground && { printBackground: true })), (scale && { scale })), (timeout && { timeout })), (width && { width }))),
+            // Close the browser
             yield browser.close();
         return page;
     });
 }
-exports.default = createPdfWithSettings;
+exports.createPdfWithSettings = createPdfWithSettings;
+function createPdfWithHTML(html, { displayHeaderFooter = undefined, footerTemplate = undefined, format = undefined, headerTemplate = undefined, height = undefined, landscape = undefined, margin = undefined, omitBackground = undefined, pageRanges = undefined, path = undefined, preferCSSPageSize = undefined, printBackground = undefined, scale = undefined, timeout = undefined, width = undefined, }) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const browser = yield launchBrowser();
+        const page = yield browser.newPage();
+        // Used promise.all to combine both promises for speed
+        yield page.setContent(html, { waitUntil: "networkidle0" }),
+            // Download the PDF
+            yield page.pdf(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ path: "result.pdf" }, (displayHeaderFooter && { displayHeaderFooter })), (footerTemplate && { footerTemplate })), ((!height || !width) && { format: format || "a4" })), (headerTemplate && { headerTemplate })), (height && { height })), (landscape && { landscape })), (margin && { margin })), (omitBackground && { omitBackground })), (pageRanges && { pageRanges })), (path && { path })), (preferCSSPageSize && { preferCSSPageSize })), (printBackground && { printBackground: true })), (scale && { scale })), (timeout && { timeout })), (width && { width }))),
+            // Close the browser
+            yield browser.close();
+        return page;
+    });
+}
+exports.createPdfWithHTML = createPdfWithHTML;

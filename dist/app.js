@@ -24,3 +24,7 @@ app.use("/", pdfRoutes_1.default);
 app.listen(process.env.PORT, () => {
     logger_1.default.info(`Listening to ${process.env.PORT}`);
 });
+process.on("uncaughtException", (error) => {
+    logger_1.default.error(error.stack);
+    process.exit(1);
+});
