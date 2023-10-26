@@ -137,28 +137,46 @@ async function createPdfWithHTML(
 ) {
   const browser = await launchBrowser();
   const page = await browser.newPage();
-  // Used promise.all to combine both promises for speed
+  await page.setContent(html, { waitUntil: "networkidle0" });
 
-  await page.setContent(html, { waitUntil: "networkidle0" }),
-    // Download the PDF
-    await page.pdf({
-      path: "output.pdf",
-      ...(displayHeaderFooter && { displayHeaderFooter }),
-      ...(footerTemplate && { footerTemplate }),
-      ...((!height || !width) && { format: format || "a4" }),
-      ...(headerTemplate && { headerTemplate }),
-      ...(height && { height }),
-      ...(landscape && { landscape }),
-      ...(margin && { margin }),
-      ...(omitBackground && { omitBackground }),
-      ...(pageRanges && { pageRanges }),
-      ...(path && { path }),
-      ...(preferCSSPageSize && { preferCSSPageSize }),
-      ...(printBackground && { printBackground: true }),
-      ...(scale && { scale }),
-      ...(timeout && { timeout }),
-      ...(width && { width }),
-    }),
+  // Used promise.all to combine both promises for speed
+  const isTrueSet = (myValue: any): boolean => myValue === "true";
+  const booleanValues = {
+    boolDisplayFooter: isTrueSet(displayHeaderFooter),
+    boolLandscape: isTrueSet(landscape),
+    boolOmitBackground: isTrueSet(omitBackground),
+    boolPreferCSSPageSize: isTrueSet(preferCSSPageSize),
+    boolPrintBackground: isTrueSet(printBackground),
+  };
+
+  const {
+    boolDisplayFooter,
+    boolLandscape,
+    boolOmitBackground,
+    boolPreferCSSPageSize,
+    boolPrintBackground,
+  } = booleanValues;
+
+  console.log(booleanValues);
+  // Download the PDF
+  await page.pdf({
+    path: "result.pdf",
+    displayHeaderFooter: boolDisplayFooter,
+    ...(footerTemplate && { footerTemplate }),
+    ...((!height || !width) && { format: format || "a4" }),
+    ...(headerTemplate && { headerTemplate }),
+    ...(height && { height }),
+    landscape: boolLandscape,
+    ...(margin && { margin }),
+    omitBackground: boolOmitBackground,
+    ...(pageRanges && { pageRanges }),
+    ...(path && { path }),
+    preferCSSPageSize: boolPreferCSSPageSize,
+    printBackground: boolPrintBackground,
+    ...(scale && { scale }),
+    ...(timeout && { timeout }),
+    ...(width && { width }),
+  }),
     // Close the browser
     await browser.close();
 

@@ -24,6 +24,7 @@ app.listen(process.env.PORT, () => {
 });
 
 // get the unhandled rejection and throw it to another fallback handler we already have.
+// Prevents server from crashing, as all rejections and exceptions are handled.
 process.on("unhandledRejection", (reason: Error, promise: Promise<any>) => {
   throw reason;
 });
