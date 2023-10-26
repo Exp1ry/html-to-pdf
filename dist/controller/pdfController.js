@@ -23,7 +23,7 @@ class PdfController {
                 //Set response headers
                 res.setHeader("Content-Type", "application/pdf");
                 res.setHeader("Content-Disposition", 'attachment; filename="reduced.pdf"');
-                const resp = yield pdfService_1.default.generatePdfService({
+                const resp = yield pdfService_1.default.generatePdfFromUrl({
                     displayHeaderFooter,
                     footerTemplate,
                     format,
@@ -51,7 +51,7 @@ class PdfController {
     generatePdfFromHTML(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { html, options: { displayHeaderFooter, footerTemplate, format, headerTemplate, height, landscape, margin, omitBackground, pageRanges, path, preferCSSPageSize, printBackground = true, scale, timeout, width, }, } = req.body;
+                const { html, displayHeaderFooter, footerTemplate, format, headerTemplate, height, landscape, margin, omitBackground, pageRanges, path, preferCSSPageSize, printBackground = true, scale, timeout, width, } = req.body;
                 const browser = yield puppeteer_1.default.launch({
                     executablePath: "/usr/bin/chromium-browser",
                     headless: true,

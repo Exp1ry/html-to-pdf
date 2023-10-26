@@ -161,20 +161,32 @@ class PdfController {
       // Generate the PDF
       console.time("Generatingpdf");
       const pdf = await page.pdf({
-        ...(displayHeaderFooter && { displayHeaderFooter }),
+        //@ts-ignore
+        ...(Boolean(displayHeaderFooter) && { Boolean(displayHeaderFooter) }),
         ...(footerTemplate && { footerTemplate }),
         ...((!height || !width) && { format: format || "A4" }),
         ...(headerTemplate && { headerTemplate }),
         ...(height && { height }),
-        ...(landscape && { landscape }),
+        //@ts-ignore
+        ...(landscape && { Boolean(landscape) }),
         ...(margin && { margin }),
-        ...(omitBackground && { omitBackground }),
+                //@ts-ignore
+
+        ...(omitBackground && { Boolean(omitBackground) }),
         ...(pageRanges && { pageRanges }),
         ...(path && { path }),
-        ...(preferCSSPageSize && { preferCSSPageSize }),
-        ...(printBackground && { printBackground }),
-        ...(scale && { scale }),
-        ...(timeout && { timeout }),
+                //@ts-ignore
+
+        ...(preferCSSPageSize && { Boolean(preferCSSPageSize) }),
+                //@ts-ignore
+
+        ...(printBackground && { Boolean(printBackground) }),
+                //@ts-ignore
+
+        ...(scale && { parseInt(scale) }),
+                //@ts-ignore
+
+        ...(timeout && { parseInt(timeout) }),
         ...(width && { width }),
         path: "output.pdf",
       });

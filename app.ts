@@ -23,6 +23,11 @@ app.listen(process.env.PORT, () => {
   logger.info(`Listening to ${process.env.PORT}`);
 });
 
+// get the unhandled rejection and throw it to another fallback handler we already have.
+process.on("unhandledRejection", (reason: Error, promise: Promise<any>) => {
+  throw reason;
+});
+
 process.on("uncaughtException", (error: Error) => {
   logger.error(error.stack);
 

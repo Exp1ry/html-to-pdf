@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon app.ts",
-    "start": "npx tsc --outDir ./dist && nodemon ./dist/app.js"
+    "start": "npx tsc --outDir ./dist && node ./dist/app.js"
   },
   "author": "Mediaslide",
   "license": "ISC",
