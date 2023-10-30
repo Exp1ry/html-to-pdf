@@ -74,7 +74,7 @@ class PdfService {
     }: PDFOptions,
 
     html: string
-  ): Promise<any> {
+  ) {
     await createPdfWithHTML(html, {
       displayHeaderFooter,
       footerTemplate,

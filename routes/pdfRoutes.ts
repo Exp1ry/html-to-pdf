@@ -8,10 +8,10 @@ const pdfRouter: Router = express.Router();
 
 pdfRouter.post(
   "/generate-pdf-url",
+  parseString,
   validationMiddleware(fromUrlSchema),
   pdfController.generatePdfFromURL
 );
-// pdfRouter.post("/test", pdfController.generatePdf);
 pdfRouter.post(
   "/generate-pdf-html",
   parseString,
