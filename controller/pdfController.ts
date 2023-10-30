@@ -113,7 +113,6 @@ class PdfController {
         "Content-Disposition",
         'attachment; filename="reduced.pdf"'
       );
-
       const resp = await pdfService.generatePdfFromHtml(
         {
           displayHeaderFooter,

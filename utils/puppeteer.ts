@@ -139,40 +139,21 @@ async function createPdfWithHTML(
   const page = await browser.newPage();
   await page.setContent(html, { waitUntil: "networkidle0" });
 
-  // Used promise.all to combine both promises for speed
-  const isTrueSet = (myValue: any): boolean => myValue === "true";
-  const booleanValues = {
-    boolDisplayFooter: isTrueSet(displayHeaderFooter),
-    boolLandscape: isTrueSet(landscape),
-    boolOmitBackground: isTrueSet(omitBackground),
-    boolPreferCSSPageSize: isTrueSet(preferCSSPageSize),
-    boolPrintBackground: isTrueSet(printBackground),
-  };
-
-  const {
-    boolDisplayFooter,
-    boolLandscape,
-    boolOmitBackground,
-    boolPreferCSSPageSize,
-    boolPrintBackground,
-  } = booleanValues;
-
-  console.log(booleanValues);
   // Download the PDF
   await page.pdf({
     path: "result.pdf",
-    displayHeaderFooter: boolDisplayFooter,
+    displayHeaderFooter: displayHeaderFooter,
     ...(footerTemplate && { footerTemplate }),
     ...((!height || !width) && { format: format || "a4" }),
     ...(headerTemplate && { headerTemplate }),
     ...(height && { height }),
-    landscape: boolLandscape,
+    landscape: landscape,
     ...(margin && { margin }),
-    omitBackground: boolOmitBackground,
+    omitBackground: omitBackground,
     ...(pageRanges && { pageRanges }),
     ...(path && { path }),
-    preferCSSPageSize: boolPreferCSSPageSize,
-    printBackground: boolPrintBackground,
+    preferCSSPageSize: preferCSSPageSize,
+    printBackground: printBackground,
     ...(scale && { scale }),
     ...(timeout && { timeout }),
     ...(width && { width }),
