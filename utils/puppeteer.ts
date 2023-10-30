@@ -2,7 +2,7 @@ import puppeteer, { Browser, PDFOptions, Page } from "puppeteer";
 import { ApiError } from "../@types/ApiError";
 import { httpCodes } from "../@types/httpCodes";
 
-async function launchBrowser(): Promise<Browser> {
+export async function launchBrowser(): Promise<Browser> {
   try {
     const browser: Browser = await puppeteer.launch({
       executablePath: "/usr/bin/chromium-browser",
@@ -61,6 +61,17 @@ async function launchBrowser(): Promise<Browser> {
   }
 }
 
+let page: Page;
+async function getPage(): Promise<Page> {
+  if (page) return page;
+
+  const browser = await launchBrowser();
+
+  page = await browser.newPage();
+
+  return page;
+}
+
 async function createPdfWithSettings(
   url: string,
   {
@@ -80,9 +91,8 @@ async function createPdfWithSettings(
     timeout = undefined,
     width = undefined,
   }: PDFOptions
-): Promise<Page> {
-  const browser = await launchBrowser();
-  const page = await browser.newPage();
+): Promise<Buffer> {
+  const page = await getPage();
 
   // Used promise.all to combine both promises for speed
   await Promise.all([
@@ -91,28 +101,23 @@ async function createPdfWithSettings(
   ]);
 
   // Download the PDF
-  await page.pdf({
+  const pdfPage = await page.pdf({
     path: "result.pdf",
-    ...(displayHeaderFooter && { displayHeaderFooter }),
-    ...(footerTemplate && { footerTemplate }),
-    ...((!height || !width) && { format: format || "a4" }),
-    ...(headerTemplate && { headerTemplate }),
-    ...(height && { height }),
-    ...(landscape && { landscape }),
-    ...(margin && { margin }),
-    ...(omitBackground && { omitBackground }),
-    ...(pageRanges && { pageRanges }),
-    ...(path && { path }),
-    ...(preferCSSPageSize && { preferCSSPageSize }),
-    ...(printBackground && { printBackground: true }),
-    ...(scale && { scale }),
-    ...(timeout && { timeout }),
-    ...(width && { width }),
-  }),
-    // Close the browser
-    await browser.close();
+    displayHeaderFooter,
+    footerTemplate,
+    height,
+    width,
+    landscape,
+    margin,
+    omitBackground,
+    pageRanges,
+    preferCSSPageSize,
+    printBackground,
+    scale,
+    timeout,
+  });
 
-  return page;
+  return pdfPage;
 }
 
 async function createPdfWithHTML(
@@ -134,34 +139,28 @@ async function createPdfWithHTML(
     timeout = undefined,
     width = undefined,
   }: PDFOptions
-) {
-  const browser = await launchBrowser();
-  const page = await browser.newPage();
+): Promise<Buffer> {
+  const page = await getPage();
   await page.setContent(html, { waitUntil: "networkidle0" });
 
   // Download the PDF
-  await page.pdf({
+  const pdfPage = await page.pdf({
     path: "result.pdf",
-    displayHeaderFooter: displayHeaderFooter,
-    ...(footerTemplate && { footerTemplate }),
-    ...((!height || !width) && { format: format || "a4" }),
-    ...(headerTemplate && { headerTemplate }),
-    ...(height && { height }),
-    landscape: landscape,
-    ...(margin && { margin }),
-    omitBackground: omitBackground,
-    ...(pageRanges && { pageRanges }),
-    ...(path && { path }),
-    preferCSSPageSize: preferCSSPageSize,
-    printBackground: printBackground,
-    ...(scale && { scale }),
-    ...(timeout && { timeout }),
-    ...(width && { width }),
-  }),
-    // Close the browser
-    await browser.close();
+    displayHeaderFooter,
+    footerTemplate,
+    height,
+    width,
+    landscape,
+    margin,
+    omitBackground,
+    pageRanges,
+    preferCSSPageSize,
+    printBackground,
+    scale,
+    timeout,
+  });
 
-  return page;
+  return pdfPage;
 }
 
 export { createPdfWithSettings, createPdfWithHTML };

@@ -2,7 +2,7 @@ import { PDFOptions, Page } from "puppeteer";
 import { exec } from "child_process"; // Import the child_process module
 import ApiResponse from "../@types/ApiResponse";
 import { ApiError } from "../@types/ApiError";
-
+import fs from "fs";
 import { createPdfWithHTML, createPdfWithSettings } from "../utils/puppeteer";
 import { httpCodes } from "../@types/httpCodes";
 class PdfService {
@@ -27,7 +27,7 @@ class PdfService {
     url: string
   ) {
     // Create a new page, and go to the url, and create the PDF
-    await createPdfWithSettings(url, {
+    const pdfPage = await createPdfWithSettings(url, {
       displayHeaderFooter,
       footerTemplate,
       format,
@@ -44,15 +44,8 @@ class PdfService {
       timeout,
       width,
     });
-    const reducedPdf = require("fs").readFileSync("result.pdf");
 
-    return new ApiResponse(
-      reducedPdf,
-      "Successfully created PDF",
-      false,
-      "",
-      200
-    );
+    return new ApiResponse(pdfPage, "Successfully created PDF", false, "", 200);
   }
   public async generatePdfFromHtml(
     {
@@ -75,7 +68,7 @@ class PdfService {
 
     html: string
   ) {
-    await createPdfWithHTML(html, {
+    const pdfFile = await createPdfWithHTML(html, {
       displayHeaderFooter,
       footerTemplate,
       format,
@@ -92,17 +85,8 @@ class PdfService {
       timeout,
       width,
     });
-    // Create a new page, and go to the url, and create the PDF
 
-    const reducedPdf = require("fs").readFileSync("result.pdf");
-
-    return new ApiResponse(
-      reducedPdf,
-      "Successfully created PDF",
-      false,
-      "",
-      200
-    );
+    return new ApiResponse(pdfFile, "Successfully created PDF", false, "", 200);
   }
 }
 const pdfService = new PdfService();
