@@ -116,6 +116,8 @@ async function createPdfWithSettings(
     scale,
     timeout,
   });
+  // Close the browser
+  // await browser.close();
 
   return pdfPage;
 }
@@ -141,7 +143,7 @@ async function createPdfWithHTML(
   }: PDFOptions
 ): Promise<Buffer> {
   const page = await getPage();
-  await page.setContent(html, { waitUntil: "networkidle0" });
+  await page.setContent(html, { waitUntil: "networkidle2" });
 
   // Download the PDF
   const pdfPage = await page.pdf({
@@ -159,6 +161,8 @@ async function createPdfWithHTML(
     scale,
     timeout,
   });
+  // Close the browser
+  // await browser.close();
 
   return pdfPage;
 }

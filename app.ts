@@ -6,8 +6,10 @@ import pdfRouter from "./routes/pdfRoutes";
 import dotenv from "dotenv";
 import logger from "./utils/logger";
 import { launchBrowser } from "./utils/puppeteer";
+import { Cluster } from "puppeteer-cluster";
 dotenv.config();
 const app = express();
+launchBrowser();
 
 // Middlewares
 app.use(cors({ origin: "*" }));
@@ -23,8 +25,6 @@ app.use("/", pdfRouter);
 app.listen(process.env.PORT, () => {
   logger.info(`Listening to ${process.env.PORT}`);
 });
-
-launchBrowser();
 
 // get the unhandled rejection and throw it to another fallback handler we already have.
 // Prevents server from crashing, as all rejections and exceptions are handled.

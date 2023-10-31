@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import pdfService from "../service/pdfService";
-import { exec } from "child_process";
 import { PDFOptions } from "puppeteer";
-import compressPdf from "../utils/compressPDF";
-import { promisify } from "util";
+
 import fs from "fs";
 import { ApiError } from "../@types/ApiError";
 import compressPDF from "../utils/compressPDF";
