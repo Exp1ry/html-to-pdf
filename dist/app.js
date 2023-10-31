@@ -10,8 +10,10 @@ const cors_1 = __importDefault(require("cors"));
 const pdfRoutes_1 = __importDefault(require("./routes/pdfRoutes"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const logger_1 = __importDefault(require("./utils/logger"));
+const puppeteer_1 = require("./utils/puppeteer");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
+(0, puppeteer_1.launchBrowser)();
 // Middlewares
 app.use((0, cors_1.default)({ origin: "*" }));
 app.use(express_1.default.json({ limit: "30mb" })); // Increase limit to 10MB
@@ -23,6 +25,11 @@ app.use(errorHandler_1.default);
 app.use("/", pdfRoutes_1.default);
 app.listen(process.env.PORT, () => {
     logger_1.default.info(`Listening to ${process.env.PORT}`);
+});
+// get the unhandled rejection and throw it to another fallback handler we already have.
+// Prevents server from crashing, as all rejections and exceptions are handled.
+process.on("unhandledRejection", (reason, promise) => {
+    throw reason;
 });
 process.on("uncaughtException", (error) => {
     logger_1.default.error(error.stack);

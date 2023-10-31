@@ -18,7 +18,7 @@ class PdfService {
     generatePdfFromUrl({ displayHeaderFooter = undefined, footerTemplate = undefined, format = undefined, headerTemplate = undefined, height = undefined, landscape = undefined, margin = undefined, omitBackground = undefined, pageRanges = undefined, path = undefined, preferCSSPageSize = undefined, printBackground = undefined, scale = undefined, timeout = undefined, width = undefined, }, url) {
         return __awaiter(this, void 0, void 0, function* () {
             // Create a new page, and go to the url, and create the PDF
-            yield (0, puppeteer_1.createPdfWithSettings)(url, {
+            const pdfPage = yield (0, puppeteer_1.createPdfWithSettings)(url, {
                 displayHeaderFooter,
                 footerTemplate,
                 format,
@@ -35,8 +35,29 @@ class PdfService {
                 timeout,
                 width,
             });
-            const reducedPdf = require("fs").readFileSync("result.pdf");
-            return new ApiResponse_1.default(reducedPdf, "Successfully created PDF", false, "", 200);
+            return new ApiResponse_1.default(pdfPage, "Successfully created PDF", false, "", 200);
+        });
+    }
+    generatePdfFromHtml({ displayHeaderFooter = undefined, footerTemplate = undefined, format = undefined, headerTemplate = undefined, height = undefined, landscape = undefined, margin = undefined, omitBackground = undefined, pageRanges = undefined, path = undefined, preferCSSPageSize = undefined, printBackground = undefined, scale = undefined, timeout = undefined, width = undefined, }, html) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const pdfFile = yield (0, puppeteer_1.createPdfWithHTML)(html, {
+                displayHeaderFooter,
+                footerTemplate,
+                format,
+                headerTemplate,
+                height,
+                landscape,
+                margin,
+                omitBackground,
+                pageRanges,
+                path,
+                preferCSSPageSize,
+                printBackground,
+                scale,
+                timeout,
+                width,
+            });
+            return new ApiResponse_1.default(pdfFile, "Successfully created PDF", false, "", 200);
         });
     }
 }

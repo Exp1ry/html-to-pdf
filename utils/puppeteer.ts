@@ -143,7 +143,7 @@ async function createPdfWithHTML(
   }: PDFOptions
 ): Promise<Buffer> {
   const page = await getPage();
-  await page.setContent(html, { waitUntil: "networkidle2" });
+  await page.setContent(html, { waitUntil: "networkidle0" });
 
   // Download the PDF
   const pdfPage = await page.pdf({
